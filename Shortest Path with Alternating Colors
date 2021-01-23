@@ -1,0 +1,42 @@
+class Solution {
+    public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
+        HashMap<Integer, List<int[]>> graph = new HashMap<>();
+        for(int[] red : red_edges)
+        {
+            List<int[]> l = graph.getOrDefault(red[0], new ArrayList<>());
+            l.add(new int[]{red[1], 0});
+            graph.put(red[0], l);
+        }
+        for(int[] blue : blue_edges)
+        {
+            List<int[]> l = graph.getOrDefault(blue[0], new ArrayList<>());
+            l.add(new int[]{blue[1], 1});
+            graph.put(blue[0], l);
+        }
+        HashSet<String> seen = new HashSet<>();
+        int[] res = new int[n];
+        Arrays.fill(res, Integer.MAX_VALUE);
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{0, 0, 2});
+        seen.add(0 + "," + 2);
+        while(!q.isEmpty())
+        {
+            int[] cur = q.poll();
+            int pos = cur[0];
+            int path = cur[1];
+            int color = cur[2];
+            res[pos] = Math.min(res[pos], path);
+            for(int[] next : graph.getOrDefault(pos, new ArrayList<>()))
+            {
+                if(next[1] != color && seen.add(next[0] + "," + next[1]))
+                    q.add(new int[]{next[0], path + 1, next[1]});
+            }
+        }
+        for(int i = 0; i < n; i ++)
+        {
+            if(res[i] == Integer.MAX_VALUE)
+                res[i] = -1;
+        }
+        return res;
+    }
+}
